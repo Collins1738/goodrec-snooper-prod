@@ -116,3 +116,4 @@ The Vite dev server proxies `/api/*` → `http://localhost:8000`.
 - [ ] Add unsubscribe flow (reply STOP or settings page)
 - [ ] Tighten CORS in production
 - [ ] Deploy to DigitalOcean
+
