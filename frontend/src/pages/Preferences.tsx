@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react'
-import { api } from '../lib/api'
+import { useNavigate } from 'react-router-dom'
+import { api, clearToken } from '../lib/api'
 
 type Venue = { key: string; name: string }
 
 export default function Preferences() {
+  const navigate = useNavigate()
   const [venues, setVenues] = useState<Venue[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+
+  function handleLogout() {
+    clearToken()
+    navigate('/')
+  }
 
   useEffect(() => {
     async function load() {
@@ -98,6 +105,13 @@ export default function Preferences() {
           className="w-full bg-green-500 hover:bg-green-400 disabled:bg-green-800 disabled:cursor-not-allowed text-black font-semibold rounded-xl py-3 text-base transition"
         >
           {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save preferences'}
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="w-full mt-4 text-gray-500 hover:text-gray-300 text-sm py-2 transition"
+        >
+          Log out
         </button>
       </div>
     </div>

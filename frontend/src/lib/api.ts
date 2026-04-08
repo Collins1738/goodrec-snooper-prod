@@ -8,6 +8,10 @@ export function setToken(token: string) {
   localStorage.setItem('token', token)
 }
 
+export function clearToken() {
+  localStorage.removeItem('token')
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken()
   const headers: Record<string, string> = {
