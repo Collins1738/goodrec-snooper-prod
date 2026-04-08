@@ -67,52 +67,75 @@ export default function Preferences() {
     )
   }
 
+  const selectedCount = selected.size
+
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
+    <div className="h-screen flex flex-col items-center bg-gray-950">
+      <div className="w-full max-w-sm flex flex-col h-full">
+
+        {/* Fixed header */}
+        <div className="pt-10 pb-4 px-4 text-center shrink-0">
           <div className="text-4xl mb-3">🔔</div>
-          <h1 className="text-2xl font-bold">Your alerts</h1>
+          <h1 className="text-2xl font-bold text-white">Your alerts</h1>
           <p className="text-gray-400 mt-2 text-sm">
             Pick which venues to watch. We'll text you when a free host slot opens.
           </p>
         </div>
 
-        <div className="space-y-3 mb-8">
+        {/* Selected count badge */}
+        {venues.length > 0 && (
+          <div className="px-4 pb-2 shrink-0">
+            <p className="text-xs text-gray-500 text-center">
+              {selectedCount === 0
+                ? 'None selected'
+                : `${selectedCount} venue${selectedCount === 1 ? '' : 's'} selected`}
+            </p>
+          </div>
+        )}
+
+        {/* Scrollable venue list */}
+        <div className="flex-1 overflow-y-auto px-4 py-1 space-y-2">
           {venues.map((venue) => (
             <button
               key={venue.key}
               onClick={() => toggle(venue.key)}
-              className={`w-full flex items-center justify-between px-4 py-4 rounded-xl border transition ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition ${
                 selected.has(venue.key)
                   ? 'border-green-500 bg-green-500/10 text-white'
                   : 'border-gray-700 bg-gray-800 text-gray-300'
               }`}
             >
-              <span className="text-base font-medium">{venue.name}</span>
-              <span className={`text-xl ${selected.has(venue.key) ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="text-base font-medium text-left">{venue.name}</span>
+              <span
+                className={`text-lg ml-2 shrink-0 transition-opacity ${
+                  selected.has(venue.key) ? 'opacity-100 text-green-400' : 'opacity-0'
+                }`}
+              >
                 ✓
               </span>
             </button>
           ))}
         </div>
 
-        {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
+        {/* Fixed footer — always visible */}
+        <div className="shrink-0 px-4 pt-3 pb-8 border-t border-gray-800 bg-gray-950">
+          {error && <p className="text-red-400 text-sm text-center mb-3">{error}</p>}
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="w-full bg-green-500 hover:bg-green-400 disabled:bg-green-800 disabled:cursor-not-allowed text-black font-semibold rounded-xl py-3 text-base transition"
-        >
-          {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save preferences'}
-        </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full bg-green-500 hover:bg-green-400 disabled:bg-green-800 disabled:cursor-not-allowed text-black font-semibold rounded-xl py-3 text-base transition"
+          >
+            {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save preferences'}
+          </button>
 
-        <button
-          onClick={handleLogout}
-          className="w-full mt-4 text-gray-500 hover:text-gray-300 text-sm py-2 transition"
-        >
-          Log out
-        </button>
+          <button
+            onClick={handleLogout}
+            className="w-full mt-3 text-gray-500 hover:text-gray-300 text-sm py-2 transition"
+          >
+            Log out
+          </button>
+        </div>
       </div>
     </div>
   )
