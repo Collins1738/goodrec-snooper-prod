@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    ENV: str = "development"  # "development" | "production"
+    ENV: str = "development"  # "development" | "staging" | "production"
 
     DATABASE_URL: str
 
@@ -38,12 +38,21 @@ class Settings(BaseSettings):
         return self.ENV == "development"
 
     @property
+    def is_staging(self) -> bool:
+        return self.ENV == "staging"
+
+    @property
+    def is_test_env(self) -> bool:
+        """True for both dev and staging — use test Twilio creds and OTP bypass."""
+        return self.ENV in ("development", "staging")
+
+    @property
     def twilio_sid(self) -> str:
-        return self.TWILIO_ACCOUNT_SID_TEST if self.is_dev else self.TWILIO_ACCOUNT_SID
+        return self.TWILIO_ACCOUNT_SID_TEST if self.is_test_env else self.TWILIO_ACCOUNT_SID
 
     @property
     def twilio_token(self) -> str:
-        return self.TWILIO_AUTH_TOKEN_TEST if self.is_dev else self.TWILIO_AUTH_TOKEN
+        return self.TWILIO_AUTH_TOKEN_TEST if self.is_test_env else self.TWILIO_AUTH_TOKEN
 
 
 settings = Settings()
