@@ -42,4 +42,8 @@ export const api = {
 
   updatePreferences: (venue_keys: string[]) =>
     request('/preferences', { method: 'PUT', body: JSON.stringify({ venue_keys }) }),
+
+  getAdminStats: () => request('/admin/stats'),
+  getAdminUsers: () => request('/admin/users'),
+  getAdminGames: () => request('/admin/games'),
 }
