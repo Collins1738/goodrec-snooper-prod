@@ -38,7 +38,4 @@ def notify_event_found(event: dict, user_count: int) -> None:
     )
 
 
-def notify_poll_complete(events_checked: int, notified: int) -> None:
-    _send_slack(
-        f"🔄 *Poll complete* — checked {events_checked} unhosted event(s), sent {notified} notification(s)."
-    )
+
