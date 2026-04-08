@@ -23,13 +23,169 @@ API_BASE = "https://api.goodrec.tech"
 
 # venue_key → exact title string as it appears in Goodrec events
 VENUES: dict[str, dict] = {
+    "asphalt_green_ues": {
+        "name": "Asphalt Green, UES",
+        "title": "Asphalt Green, UES",
+    },
+    "astoria_park": {
+        "name": "Astoria Park",
+        "title": "Astoria Park",
+    },
+    "astoria_park_queens": {
+        "name": "Astoria Park, Queens",
+        "title": "Astoria Park, Queens",
+    },
+    "brooklyn_bridge_park": {
+        "name": "Brooklyn Bridge Park",
+        "title": "Brooklyn Bridge Park",
+    },
+    "bushwick_inlet": {
+        "name": "Bushwick Inlet",
+        "title": "Bushwick Inlet",
+    },
+    "bushwick_pk_williamsburg": {
+        "name": "Bushwick Pk, Williamsburg",
+        "title": "Bushwick Pk, Williamsburg",
+    },
+    "bushwick_williamsburg": {
+        "name": "Bushwick, Williamsburg",
+        "title": "Bushwick, Williamsburg",
+    },
+    "canal_street_les": {
+        "name": "Canal Street, LES",
+        "title": "Canal Street, LES",
+    },
+    "chelsea_park": {
+        "name": "Chelsea Park, Chelsea",
+        "title": "Chelsea Park, Chelsea",
+    },
+    "chelsea_waterside_park": {
+        "name": "Chelsea Waterside Park",
+        "title": "Chelsea Waterside Park",
+    },
+    "columbus_park_les": {
+        "name": "Columbus Park, LES",
+        "title": "Columbus Park, LES",
+    },
+    "de_witt_clinton": {
+        "name": "De Witt Clinton, Hell's Kitchen",
+        "title": "De Witt Clinton, Hell's Kitchen",
+    },
+    "dwight_school": {
+        "name": "Dwight School",
+        "title": "Dwight School",
+    },
+    "east_river_park": {
+        "name": "East River Park",
+        "title": "East River Park",
+    },
+    "east_river_park_grand_st": {
+        "name": "East River Park, Grand St",
+        "title": "East River Park, Grand St",
+    },
+    "frederick_douglass": {
+        "name": "Frederick Douglass",
+        "title": "Frederick Douglass",
+    },
+    "futbol_rebels_bed_stuy": {
+        "name": "Futbol Rebels, Bed-Stuy",
+        "title": "Futbol Rebels, Bed-Stuy",
+    },
+    "gansevoort_field": {
+        "name": "Gansevoort Field",
+        "title": "Gansevoort Field",
+    },
+    "gansevoort_peninsula": {
+        "name": "Gansevoort Peninsula",
+        "title": "Gansevoort Peninsula",
+    },
+    "grover_cleveland": {
+        "name": "Grover Cleveland",
+        "title": "Grover Cleveland",
+    },
+    "jj_walker_west_village": {
+        "name": "JJ Walker, West Village",
+        "title": "JJ Walker, West Village",
+    },
+    "la_cancha": {
+        "name": "La Cancha",
+        "title": "La Cancha",
+    },
+    "mccarren_park": {
+        "name": "McCarren Park",
+        "title": "McCarren Park",
+    },
+    "nike_field_bowery": {
+        "name": "Nike Field, Bowery",
+        "title": "Nike Field, Bowery",
+    },
+    "ps134_les": {
+        "name": "P.S. 134, LES",
+        "title": "P.S. 134, LES",
+    },
+    "panna_hunters_point": {
+        "name": "PANNA, Hunters Point",
+        "title": "PANNA, Hunters Point",
+    },
+    "ps188_east_village": {
+        "name": "PS188, East Village",
+        "title": "PS188, East Village",
+    },
+    "pier_40_courtyard_east": {
+        "name": "Pier 40 Courtyard EAST",
+        "title": "Pier 40 Courtyard EAST",
+    },
+    "pier_40_courtyard_manhattan": {
+        "name": "Pier 40 Courtyard, Manhattan",
+        "title": "Pier 40 Courtyard, Manhattan",
+    },
+    "pier_42_manhattan": {
+        "name": "Pier 42, Manhattan",
+        "title": "Pier 42, Manhattan",
+    },
+    "pier_5_brooklyn": {
+        "name": "Pier 5, Brooklyn",
+        "title": "Pier 5, Brooklyn ",  # trailing space as it appears in Goodrec
+    },
+    "randalls_island_park": {
+        "name": "Randall's Island Park",
+        "title": "Randall's Island Park",
+    },
+    "seward_park_les": {
+        "name": "Seward Park, LES",
+        "title": "Seward Park, LES",
+    },
+    "soccer_center_astoria": {
+        "name": "Soccer Center, Astoria",
+        "title": "Soccer Center, Astoria",
+    },
     "socceroof_crown_heights": {
         "name": "Socceroof, Crown Heights",
         "title": "Socceroof, Crown Heights",
     },
+    "socceroof_sunset_park": {
+        "name": "Socceroof, Sunset Park",
+        "title": "Socceroof, Sunset Park",
+    },
     "socceroof_wall_street": {
         "name": "Socceroof, Wall Street",
-        "title": "Socceroof Wall Street",
+        "title": "Socceroof, Wall Street",
+    },
+    "tanahey_field": {
+        "name": "Tanahey Field",
+        "title": "Tanahey Field",
+    },
+    "tanahey_playground": {
+        "name": "Tanahey Playground",
+        "title": "Tanahey Playground",
+    },
+    "the_post_bk_greenpoint": {
+        "name": "The Post BK, Greenpoint",
+        "title": "The Post BK, Greenpoint",
+    },
+    "triborough_astoria": {
+        "name": "Triborough, Astoria",
+        "title": "Triborough, Astoria ",  # trailing space as it appears in Goodrec
     },
 }
 
