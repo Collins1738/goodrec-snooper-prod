@@ -61,10 +61,6 @@ async def _notify_users_for_event(db, event: dict) -> int:
     if not users:
         return 0
 
-    # In staging, fire a Slack notification for this event
-    if settings.is_test_env:
-        slack.notify_event_found(event, len(users))
-
     from app.services.goodrec import _format_start_time
     time_str = _format_start_time(event.get("start_time", ""))
     msg = (

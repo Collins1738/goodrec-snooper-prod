@@ -23,7 +23,16 @@ def verify_otp(phone: str, code: str) -> bool:
 
 
 def send_sms(phone: str, message: str) -> None:
-    # Uses Verify messaging service — swap to Twilio Messaging if needed
+    if settings.is_test_env:
+        # In dev/staging: log to Slack instead of sending a real SMS
+        from app.services.slack import _send_slack
+        _send_slack(
+            f"📱 *[SMS would send]*\n"
+            f"• To: `{phone}`\n"
+            f"• Message: {message}"
+        )
+        print(f"[{settings.ENV.upper()}] SMS intercepted for {phone}: {message}")
+        return
     _client.messages.create(
         to=phone,
         from_=settings.TWILIO_FROM_NUMBER,
