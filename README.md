@@ -8,8 +8,32 @@ SMS alerts for free host slots on Goodrec.
 - **Scheduler:** APScheduler (15-min polling)
 
 ## Deployments
+
+### Production
 - **Backend (Railway):** https://goodrec-snooper-prod-production.up.railway.app
 - **Frontend (Vercel):** https://snoop.sallova.com
+- **Branch:** `main`
+
+### Staging
+- **Backend (Railway):** https://goodrec-snooper-prod-staging.up.railway.app
+- **Frontend (Vercel):** https://snoop-staging.sallova.com
+- **Branch:** `dev` — any push to `dev` auto-deploys to staging
+
+#### Staging environment variables (Railway)
+Staging mirrors production env vars with the following differences:
+
+| Variable | Value | Notes |
+|---|---|---|
+| `ENV` | `staging` | Enables OTP bypass + test Twilio creds |
+| `TWILIO_ACCOUNT_SID_TEST` | *(test SID)* | Used instead of real SID when `ENV=staging` |
+| `TWILIO_AUTH_TOKEN_TEST` | *(test token)* | Used instead of real token when `ENV=staging` |
+| `DATABASE_URL` | *(Railway Postgres — staging DB)* | Separate DB from production |
+
+#### How staging differs from production
+- **OTP bypass:** `ENV=staging` skips Twilio entirely — use code `0000` to verify any phone number
+- **Test Twilio creds:** staging uses `TWILIO_ACCOUNT_SID_TEST` / `TWILIO_AUTH_TOKEN_TEST`
+- **Separate database:** staging has its own Postgres instance on Railway
+- **Vercel preview:** `VITE_API_URL` for Preview deployments points to the staging Railway backend
 
 ---
 
