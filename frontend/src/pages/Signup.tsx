@@ -38,13 +38,13 @@ export default function Signup() {
             <label className="block text-sm text-gray-400 mb-1">Phone number</label>
             <input
               type="tel"
-              placeholder="+1 212 555 1234"
+              placeholder="212 555 1234"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
               className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-base placeholder-gray-500 focus:outline-none focus:border-green-500 transition"
             />
-            <p className="text-xs text-gray-500 mt-1">Include country code (e.g. +1)</p>
+
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
