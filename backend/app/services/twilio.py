@@ -3,13 +3,20 @@ from app.core.config import settings
 
 _client = Client(settings.twilio_sid, settings.twilio_token)
 
+DEV_TEST_CODE = "0000"
+
 
 def send_otp(phone: str) -> None:
+    if settings.is_dev:
+        print(f"[DEV] Skipping Twilio OTP for {phone}. Use code: {DEV_TEST_CODE}")
+        return
     _client.verify.v2.services(settings.TWILIO_VERIFY_SERVICE_SID) \
         .verifications.create(to=phone, channel="sms")
 
 
 def verify_otp(phone: str, code: str) -> bool:
+    if settings.is_dev:
+        return code == DEV_TEST_CODE
     result = _client.verify.v2.services(settings.TWILIO_VERIFY_SERVICE_SID) \
         .verification_checks.create(to=phone, code=code)
     return result.status == "approved"
