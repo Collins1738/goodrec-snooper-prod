@@ -3,7 +3,7 @@ from app.core.config import settings
 
 _client = Client(settings.twilio_sid, settings.twilio_token)
 
-DEV_TEST_CODE = "000000"
+DEV_TEST_CODE = "0000"
 
 
 def send_otp(phone: str) -> None:
