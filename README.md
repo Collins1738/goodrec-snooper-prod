@@ -109,6 +109,20 @@ The Vite dev server proxies `/api/*` → `http://localhost:8000`.
 
 ---
 
+## Testing SMS (Twilio verification)
+
+Once Twilio has verified the account, use the test script to confirm real SMS delivery:
+
+```bash
+cd backend
+source venv/bin/activate
+python3 test_sms.py
+```
+
+`backend/test_sms.py` reads creds from `.env` and sends a real SMS to `+15713989671` using the prod Twilio account and phone number. It bypasses the `is_test_env` gate so it always hits the real Twilio API regardless of `ENV`.
+
+---
+
 ## TODO
 - [ ] Wire up real Goodrec API params in `services/goodrec.py`
 - [ ] Add `TWILIO_FROM_NUMBER` to config + .env.example
