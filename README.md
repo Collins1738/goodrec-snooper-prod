@@ -9,7 +9,7 @@ SMS alerts for free host slots on Goodrec.
 
 ## Deployments
 - **Backend (Railway):** https://goodrec-snooper-prod-production.up.railway.app
-- **Frontend (Vercel):** *(add Vercel URL here)*
+- **Frontend (Vercel):** https://snoop.sallova.com
 
 ---
 
