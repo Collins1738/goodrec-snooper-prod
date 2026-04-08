@@ -1,3 +1,4 @@
 {
+  "ignoreCommand": "git diff HEAD~1 --name-only | grep -q '^frontend/'",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
