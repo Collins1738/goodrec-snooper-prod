@@ -17,8 +17,6 @@ async def poll_and_notify():
         unhosted_events = await fetch_unhosted_events()
         if not unhosted_events:
             print("[poller] No unhosted events found.")
-            if settings.is_test_env:
-                slack.notify_poll_complete(0, 0)
             return
 
         total_notified = 0
@@ -28,13 +26,9 @@ async def poll_and_notify():
                 total_notified += count
 
         print(f"[poller] Done. Checked {len(unhosted_events)} unhosted events, notified {total_notified}.")
-        if settings.is_test_env:
-            slack.notify_poll_complete(len(unhosted_events), total_notified)
 
     except Exception as e:
         print(f"[poller] Error: {e}")
-        if settings.is_test_env:
-            slack.notify_poll_complete(-1, 0)
 
 
 async def _notify_users_for_event(db, event: dict) -> int:
