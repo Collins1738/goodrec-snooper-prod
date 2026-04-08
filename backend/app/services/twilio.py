@@ -7,15 +7,15 @@ DEV_TEST_CODE = "0000"
 
 
 def send_otp(phone: str) -> None:
-    if settings.is_dev:
-        print(f"[DEV] Skipping Twilio OTP for {phone}. Use code: {DEV_TEST_CODE}")
+    if settings.is_test_env:
+        print(f"[{settings.ENV.upper()}] Skipping Twilio OTP for {phone}. Use code: {DEV_TEST_CODE}")
         return
     _client.verify.v2.services(settings.TWILIO_VERIFY_SERVICE_SID) \
         .verifications.create(to=phone, channel="sms")
 
 
 def verify_otp(phone: str, code: str) -> bool:
-    if settings.is_dev:
+    if settings.is_test_env:
         return code == DEV_TEST_CODE
     result = _client.verify.v2.services(settings.TWILIO_VERIFY_SERVICE_SID) \
         .verification_checks.create(to=phone, code=code)
