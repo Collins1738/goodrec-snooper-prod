@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     GOODREC_ACCESS_TOKEN: str
     GOODREC_REFRESH_TOKEN: str
 
+    SLACK_WEBHOOK_URL: str = ""  # Optional — used for staging notifications
+
     class Config:
         env_file = ".env"
 
