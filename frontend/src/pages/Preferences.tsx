@@ -19,6 +19,13 @@ export default function Preferences() {
   }
 
   useEffect(() => {
+    if (!localStorage.getItem('token')) {
+      navigate('/', { replace: true })
+      return
+    }
+  }, [])
+
+  useEffect(() => {
     async function load() {
       try {
         const [venueList, prefs] = await Promise.all([
