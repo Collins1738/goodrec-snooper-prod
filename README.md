@@ -3,9 +3,13 @@
 SMS alerts for free host slots on Goodrec.
 
 ## Stack
-- **Backend:** FastAPI (Python 3.11+) + PostgreSQL + Twilio
-- **Frontend:** React + Vite + Tailwind CSS
+- **Backend:** FastAPI (Python 3.11+) + PostgreSQL + Twilio — deployed on **Railway**
+- **Frontend:** React + Vite + Tailwind CSS — deployed on **Vercel**
 - **Scheduler:** APScheduler (15-min polling)
+
+## Deployments
+- **Backend (Railway):** https://goodrec-snooper-prod-production.up.railway.app
+- **Frontend (Vercel):** https://snoop.sallova.com
 
 ---
 

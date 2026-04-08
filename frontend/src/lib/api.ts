@@ -1,4 +1,4 @@
-const BASE = '/api'
+const BASE = import.meta.env.VITE_API_URL ?? '/api'
 
 function getToken() {
   return localStorage.getItem('token')
@@ -42,4 +42,8 @@ export const api = {
 
   updatePreferences: (venue_keys: string[]) =>
     request('/preferences', { method: 'PUT', body: JSON.stringify({ venue_keys }) }),
+
+  getAdminStats: () => request('/admin/stats'),
+  getAdminUsers: () => request('/admin/users'),
+  getAdminGames: () => request('/admin/games'),
 }
