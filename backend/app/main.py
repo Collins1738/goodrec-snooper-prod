@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.api import auth, venues, preferences, admin
+from app.core.config import settings
 from app.jobs.poller import poll_and_notify
+from app.services import slack
 
 scheduler = AsyncIOScheduler()
 
@@ -15,6 +17,8 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(poll_and_notify, "interval", minutes=15, id="poller")
     scheduler.start()
     print("[scheduler] Poller started — running every 15 minutes")
+    if settings.is_test_env:
+        slack.notify_poller_started()
     yield
     scheduler.shutdown()
 
