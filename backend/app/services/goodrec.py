@@ -211,8 +211,13 @@ async def fetch_unhosted_events(days: int = 7, max_pages: int = 50) -> list[dict
 
     # Refresh if needed and persist updated tokens
     if _token_is_expiring_soon(access_token):
-        access_token, refresh_token = await _refresh_tokens(access_token, refresh_token)
-        await _save_tokens(access_token, refresh_token)
+        try:
+            access_token, refresh_token = await _refresh_tokens(access_token, refresh_token)
+            await _save_tokens(access_token, refresh_token)
+        except Exception as e:
+            from app.services.slack import notify_auth_failure
+            notify_auth_failure(str(e))
+            raise
 
     # Build title → venue_key lookup
     title_to_key = {info["title"]: key for key, info in VENUES.items()}

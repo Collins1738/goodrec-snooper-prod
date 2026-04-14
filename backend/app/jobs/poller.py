@@ -29,6 +29,11 @@ async def poll_and_notify():
 
     except Exception as e:
         print(f"[poller] Error: {e}")
+        # Fire Slack alert for auth-related failures
+        err_str = str(e).lower()
+        if any(k in err_str for k in ("401", "unauthorized", "auth", "token", "refresh")):
+            from app.services.slack import notify_auth_failure
+            notify_auth_failure(str(e))
 
 
 async def _notify_users_for_event(db, event: dict) -> int:
