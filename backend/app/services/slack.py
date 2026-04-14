@@ -32,6 +32,10 @@ def notify_auth_failure(error: str) -> None:
     )
 
 
+def notify_poller_error(error: str) -> None:
+    _send_slack(f"🔴 *Goodrec Snooper error* — poller run failed.\nError: `{error}`")
+
+
 def notify_event_found(event: dict, user_count: int) -> None:
     venue = event.get("venue_name", "Unknown venue")
     from app.services.goodrec import _format_start_time
