@@ -108,7 +108,7 @@ Once you have fresh tokens, go to the **Admin dashboard → Tokens tab** and pas
 
 ### How refresh works
 
-The snooper auto-refreshes the access token before each poll run using `_refresh_tokens()` in `services/goodrec.py`. A `_refresh_tokens_firebase()` function also exists (not yet wired up) that refreshes directly via Firebase — this is the method the Goodrec mobile app uses and is the correct long-term approach.
+The snooper checks the access token's expiry before each poll. If it's expiring within 2 minutes, it calls `_refresh_tokens()` in `services/goodrec.py` and saves the new tokens to the DB. Otherwise it uses the cached token directly. A `_refresh_tokens_firebase()` function also exists (not yet wired up) that refreshes directly via Firebase — this is the method the Goodrec mobile app uses and is the correct long-term approach.
 
 If auth ever breaks (401s), you'll get a Slack alert with instructions to reseed.
 
