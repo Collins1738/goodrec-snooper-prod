@@ -5,6 +5,18 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
 
 
+class GoodrecTokenStore(Base):
+    """Singleton row (id='default') that persists Goodrec API tokens across restarts."""
+    __tablename__ = "goodrec_token_store"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default="default")
+    access_token: Mapped[str] = mapped_column(String, nullable=False)
+    refresh_token: Mapped[str] = mapped_column(String, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=text("NOW()"), onupdate=datetime.utcnow
+    )
+
+
 class User(Base):
     __tablename__ = "users"
 

@@ -50,4 +50,13 @@ export const api = {
   getAdminStats: () => request('/admin/stats'),
   getAdminUsers: () => request('/admin/users'),
   getAdminGames: () => request('/admin/games'),
+  getTokenStatus: () =>
+    request<{ access_token_preview: string; expires_at: number | null; expired: boolean }>(
+      '/admin/tokens/status'
+    ),
+  seedTokens: (access_token: string, refresh_token: string) =>
+    request('/admin/tokens/seed', {
+      method: 'POST',
+      body: JSON.stringify({ access_token, refresh_token }),
+    }),
 }

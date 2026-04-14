@@ -29,6 +29,8 @@ async def poll_and_notify():
 
     except Exception as e:
         print(f"[poller] Error: {e}")
+        from app.services.slack import notify_poller_error
+        notify_poller_error(str(e))
 
 
 async def _notify_users_for_event(db, event: dict) -> int:

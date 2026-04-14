@@ -24,6 +24,18 @@ def notify_poller_started() -> None:
     _send_slack("🟢 *Goodrec Snooper* — poller started, running every 15 minutes.")
 
 
+def notify_auth_failure(error: str) -> None:
+    _send_slack(
+        f"🔴 *Goodrec auth failure* — token refresh failed and poller is dead.\n"
+        f"Error: `{error}`\n"
+        f"Fix: capture fresh tokens via Proxyman and POST to `/admin/tokens/seed`."
+    )
+
+
+def notify_poller_error(error: str) -> None:
+    _send_slack(f"🔴 *Goodrec Snooper error* — poller run failed.\nError: `{error}`")
+
+
 def notify_event_found(event: dict, user_count: int) -> None:
     venue = event.get("venue_name", "Unknown venue")
     from app.services.goodrec import _format_start_time
