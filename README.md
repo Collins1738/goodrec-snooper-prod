@@ -85,6 +85,35 @@ The Vite dev server proxies `/api/*` → `http://localhost:8000`.
 
 ---
 
+## Goodrec Auth
+
+Goodrec uses **Firebase Auth** (project: `pickupsoccer-6a62a`) under the hood.
+
+The snooper needs a Goodrec account's `access_token` and `refresh_token`. Since Goodrec uses Firebase email/password auth, you can get fresh tokens at any time via the Firebase REST API — no Proxyman needed:
+
+```bash
+curl -s -X POST \
+  "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBjWTaS0yXRfiyij3OyEY3PHp7FelV62S4" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"<your-goodrec-email>","password":"<your-goodrec-password>","returnSecureToken":true}'
+```
+
+Response contains:
+- `idToken` → use as `access_token` (expires in 1 hour)
+- `refreshToken` → use as `refresh_token` (long-lived)
+
+### Seeding tokens into prod
+
+Once you have fresh tokens, go to the **Admin dashboard → Tokens tab** and paste them in. No redeploy needed.
+
+### How refresh works
+
+The snooper auto-refreshes the access token before each poll run using `_refresh_tokens()` in `services/goodrec.py`. A `_refresh_tokens_firebase()` function also exists (not yet wired up) that refreshes directly via Firebase — this is the method the Goodrec mobile app uses and is the correct long-term approach.
+
+If auth ever breaks (401s), you'll get a Slack alert with instructions to reseed.
+
+---
+
 ## TODO
 - [ ] Wire up real Goodrec API params in `services/goodrec.py`
 - [ ] Add `TWILIO_FROM_NUMBER` to config + .env.example
