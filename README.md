@@ -98,7 +98,7 @@ curl -s -X POST \
   -d '{"email":"<your-goodrec-email>","password":"<your-goodrec-password>","returnSecureToken":true}'
 ```
 
-Firebase API key is stored in Railway env vars as `FIREBASE_API_KEY`.
+Firebase API key is stored in Railway env vars as `FIREBASE_API_KEY`. The key value is documented in session memory (Dravon, 04/14/26).
 
 Response contains:
 - `idToken` → use as `access_token` (expires in 1 hour)
