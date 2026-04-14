@@ -93,10 +93,12 @@ The snooper needs a Goodrec account's `access_token` and `refresh_token`. Since 
 
 ```bash
 curl -s -X POST \
-  "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBjWTaS0yXRfiyij3OyEY3PHp7FelV62S4" \
+  "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=<FIREBASE_API_KEY>" \
   -H "Content-Type: application/json" \
   -d '{"email":"<your-goodrec-email>","password":"<your-goodrec-password>","returnSecureToken":true}'
 ```
+
+Firebase API key is stored in Railway env vars as `FIREBASE_API_KEY`.
 
 Response contains:
 - `idToken` → use as `access_token` (expires in 1 hour)

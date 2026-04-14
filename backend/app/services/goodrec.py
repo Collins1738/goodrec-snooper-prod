@@ -412,7 +412,7 @@ async def _refresh_tokens_firebase(refresh_token: str) -> tuple[str, str]:
     TODO: Replace _refresh_tokens() with this once confirmed working with a
     fresh Firebase refresh token from Proxyman.
     """
-    FIREBASE_API_KEY = "AIzaSyBjWTaS0yXRfiyij3OyEY3PHp7FelV62S4"
+    FIREBASE_API_KEY = settings.FIREBASE_API_KEY
     async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
         resp = await client.post(
             f"https://securetoken.googleapis.com/v1/token?key={FIREBASE_API_KEY}",
