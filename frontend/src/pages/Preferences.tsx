@@ -19,6 +19,13 @@ export default function Preferences() {
   }
 
   useEffect(() => {
+    if (!localStorage.getItem('token')) {
+      navigate('/', { replace: true })
+      return
+    }
+  }, [])
+
+  useEffect(() => {
     async function load() {
       try {
         const [venueList, prefs] = await Promise.all([
@@ -85,7 +92,7 @@ export default function Preferences() {
         {/* Selected count badge */}
         {venues.length > 0 && (
           <div className="px-4 pb-2 shrink-0">
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-green-400 text-center">
               {selectedCount === 0
                 ? 'None selected'
                 : `${selectedCount} venue${selectedCount === 1 ? '' : 's'} selected`}

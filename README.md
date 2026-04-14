@@ -8,8 +8,32 @@ SMS alerts for free host slots on Goodrec.
 - **Scheduler:** APScheduler (15-min polling)
 
 ## Deployments
+
+### Production
 - **Backend (Railway):** https://goodrec-snooper-prod-production.up.railway.app
 - **Frontend (Vercel):** https://snoop.sallova.com
+- **Branch:** `main`
+
+### Staging
+- **Backend (Railway):** https://goodrec-snooper-prod-staging.up.railway.app
+- **Frontend (Vercel):** https://snoop-staging.sallova.com
+- **Branch:** `dev` — any push to `dev` auto-deploys to staging
+
+#### Staging environment variables (Railway)
+Staging mirrors production env vars with the following differences:
+
+| Variable | Value | Notes |
+|---|---|---|
+| `ENV` | `staging` | Enables OTP bypass + test Twilio creds |
+| `TWILIO_ACCOUNT_SID_TEST` | *(test SID)* | Used instead of real SID when `ENV=staging` |
+| `TWILIO_AUTH_TOKEN_TEST` | *(test token)* | Used instead of real token when `ENV=staging` |
+| `DATABASE_URL` | *(Railway Postgres — staging DB)* | Separate DB from production |
+
+#### How staging differs from production
+- **OTP bypass:** `ENV=staging` skips Twilio entirely — use code `0000` to verify any phone number
+- **Test Twilio creds:** staging uses `TWILIO_ACCOUNT_SID_TEST` / `TWILIO_AUTH_TOKEN_TEST`
+- **Separate database:** staging has its own Postgres instance on Railway
+- **Vercel preview:** `VITE_API_URL` for Preview deployments points to the staging Railway backend
 
 ---
 
@@ -116,6 +140,20 @@ If auth ever breaks (401s), you'll get a Slack alert with instructions to reseed
 
 ---
 
+## Testing SMS (Twilio verification)
+
+Once Twilio has verified the account, use the test script to confirm real SMS delivery:
+
+```bash
+cd backend
+source venv/bin/activate
+python3 test_sms.py
+```
+
+`backend/test_sms.py` reads creds from `.env` and sends a real SMS to `+15713989671` using the prod Twilio account and phone number. It bypasses the `is_test_env` gate so it always hits the real Twilio API regardless of `ENV`.
+
+---
+
 ## TODO
 - [ ] Wire up real Goodrec API params in `services/goodrec.py`
 - [ ] Add `TWILIO_FROM_NUMBER` to config + .env.example
@@ -123,3 +161,11 @@ If auth ever breaks (401s), you'll get a Slack alert with instructions to reseed
 - [ ] Add unsubscribe flow (reply STOP or settings page)
 - [ ] Tighten CORS in production
 - [ ] Deploy to DigitalOcean
+
+
+
+
+
+
+
+
