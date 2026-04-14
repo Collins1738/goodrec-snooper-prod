@@ -7,11 +7,15 @@ from __future__ import annotations
 import base64
 import json
 import time
+from datetime import datetime
 from typing import Any
 
 import httpx
+from sqlalchemy import select
 
 from app.core.config import settings
+from app.db.database import AsyncSessionLocal
+from app.db.models import GoodrecTokenStore
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -196,19 +200,19 @@ async def fetch_unhosted_events(days: int = 7, max_pages: int = 50) -> list[dict
     """
     Fetch unhosted events across all tracked venues, covering `days` distinct dates.
 
-    Handles token refresh transparently using settings.GOODREC_ACCESS_TOKEN /
-    settings.GOODREC_REFRESH_TOKEN.
+    Handles token refresh transparently. Tokens are loaded from the DB
+    (goodrec_token_store) and persisted back after every refresh.
+    Falls back to env vars (settings.GOODREC_*) if the DB row doesn't exist yet.
 
     Returns a list of dicts:
       { event_id, venue_key, venue_name, date, start_time, deeplink }
     """
-    access_token = settings.GOODREC_ACCESS_TOKEN
-    refresh_token = settings.GOODREC_REFRESH_TOKEN
+    access_token, refresh_token = await _load_tokens()
 
-    # Refresh if needed
+    # Refresh if needed and persist updated tokens
     if _token_is_expiring_soon(access_token):
         access_token, refresh_token = await _refresh_tokens(access_token, refresh_token)
-        # TODO: persist updated tokens back to settings/DB if needed
+        await _save_tokens(access_token, refresh_token)
 
     # Build title → venue_key lookup
     title_to_key = {info["title"]: key for key, info in VENUES.items()}
@@ -335,6 +339,39 @@ def _build_headers(access_token: str) -> dict[str, str]:
         "X-App-Version": "2.0.0",
         "X-Platform": "iOS",
     }
+
+
+async def _load_tokens() -> tuple[str, str]:
+    """Load tokens from DB, falling back to env vars if no row exists yet."""
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(GoodrecTokenStore).where(GoodrecTokenStore.id == "default")
+        )
+        row = result.scalar_one_or_none()
+        if row:
+            return row.access_token, row.refresh_token
+    # Fall back to env vars (first-run / manual seeding scenario)
+    return settings.GOODREC_ACCESS_TOKEN, settings.GOODREC_REFRESH_TOKEN
+
+
+async def _save_tokens(access_token: str, refresh_token: str) -> None:
+    """Upsert tokens to DB so they survive restarts."""
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(GoodrecTokenStore).where(GoodrecTokenStore.id == "default")
+        )
+        row = result.scalar_one_or_none()
+        if row:
+            row.access_token = access_token
+            row.refresh_token = refresh_token
+            row.updated_at = datetime.utcnow()
+        else:
+            session.add(GoodrecTokenStore(
+                id="default",
+                access_token=access_token,
+                refresh_token=refresh_token,
+            ))
+        await session.commit()
 
 
 async def _refresh_tokens(access_token: str, refresh_token: str) -> tuple[str, str]:
