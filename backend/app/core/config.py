@@ -29,7 +29,7 @@ class Settings(BaseSettings):
 
     GOODREC_ACCESS_TOKEN: str
     GOODREC_REFRESH_TOKEN: str
-    FIREBASE_API_KEY: str = "AIzaSyBjWTaS0yXRfiyij3OyEY3PHp7FelV62S4"  # Goodrec Firebase project (pickupsoccer-6a62a) — intentionally public but kept out of source
+    FIREBASE_API_KEY: str  # Goodrec Firebase project key (pickupsoccer-6a62a) — set in Railway env vars
 
     SLACK_WEBHOOK_URL: str = ""  # Optional — used for staging notifications
 
