@@ -380,7 +380,12 @@ async def _save_tokens(access_token: str, refresh_token: str) -> None:
 
 
 async def _refresh_tokens(access_token: str, refresh_token: str) -> tuple[str, str]:
-    """Call /api/v2/auth/refresh and return (new_access_token, new_refresh_token)."""
+    """Call /api/v2/auth/refresh and return (new_access_token, new_refresh_token).
+
+    NOTE: Goodrec appears to have migrated to Firebase Auth — the mobile app now
+    refreshes tokens directly via securetoken.googleapis.com rather than this endpoint.
+    TODO: Switch to _refresh_tokens_firebase() once we have a fresh Firebase refresh token.
+    """
     async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
         resp = await client.post(
             f"{API_BASE}/api/v2/auth/refresh",
@@ -394,6 +399,30 @@ async def _refresh_tokens(access_token: str, refresh_token: str) -> tuple[str, s
         resp.raise_for_status()
         data = resp.json()
         return data["accessToken"], data["refreshToken"]
+
+
+async def _refresh_tokens_firebase(refresh_token: str) -> tuple[str, str]:
+    """Refresh via Firebase directly (securetoken.googleapis.com).
+
+    This is how the Goodrec mobile app now refreshes tokens — bypassing
+    api.goodrec.tech/api/v2/auth/refresh entirely.
+
+    Returns (new_access_token, new_refresh_token).
+
+    TODO: Replace _refresh_tokens() with this once confirmed working with a
+    fresh Firebase refresh token from Proxyman.
+    """
+    FIREBASE_API_KEY = "AIzaSyBjWTaS0yXRfiyij3OyEY3PHp7FelV62S4"
+    async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+        resp = await client.post(
+            f"https://securetoken.googleapis.com/v1/token?key={FIREBASE_API_KEY}",
+            headers={"Content-Type": "application/json"},
+            json={"grant_type": "refresh_token", "refresh_token": refresh_token},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        # Firebase returns id_token (access) and refresh_token
+        return data["id_token"], data["refresh_token"]
 
 # ── Formatting helpers ────────────────────────────────────────────────────────
 
