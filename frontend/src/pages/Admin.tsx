@@ -213,13 +213,152 @@ function GamesTab({ games }: { games: Game[] }) {
   )
 }
 
+// ── Tokens Tab ────────────────────────────────────────────────────────────────
+
+type TokenStatus = {
+  access_token_preview: string
+  expires_at: number | null
+  expired: boolean
+}
+
+function TokensTab() {
+  const [status, setStatus] = useState<TokenStatus | null>(null)
+  const [loadingStatus, setLoadingStatus] = useState(true)
+  const [accessToken, setAccessToken] = useState('')
+  const [refreshToken, setRefreshToken] = useState('')
+  const [seeding, setSeeding] = useState(false)
+  const [seedMsg, setSeedMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  async function fetchStatus() {
+    setLoadingStatus(true)
+    try {
+      const data = await api.getTokenStatus()
+      setStatus(data)
+    } catch {
+      setStatus(null)
+    } finally {
+      setLoadingStatus(false)
+    }
+  }
+
+  useEffect(() => { fetchStatus() }, [])
+
+  async function handleSeed(e: React.FormEvent) {
+    e.preventDefault()
+    if (!accessToken.trim() || !refreshToken.trim()) return
+    setSeeding(true)
+    setSeedMsg(null)
+    try {
+      await api.seedTokens(accessToken.trim(), refreshToken.trim())
+      setSeedMsg({ ok: true, text: 'Tokens saved successfully.' })
+      setAccessToken('')
+      setRefreshToken('')
+      await fetchStatus()
+    } catch (err: any) {
+      setSeedMsg({ ok: false, text: err.message || 'Failed to save tokens.' })
+    } finally {
+      setSeeding(false)
+    }
+  }
+
+  function formatExpiry(epoch: number | null): string {
+    if (epoch === null) return 'Unknown'
+    return new Date(epoch * 1000).toLocaleString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', hour12: true,
+    })
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Current status */}
+      <div className="bg-gray-800 rounded-xl px-4 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-300">Current Token Status</h2>
+          <button
+            onClick={fetchStatus}
+            disabled={loadingStatus}
+            className="text-xs text-gray-400 hover:text-white transition disabled:opacity-40"
+          >
+            {loadingStatus ? 'Loading…' : 'Refresh'}
+          </button>
+        </div>
+        {status ? (
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Access token</span>
+              <span className="font-mono text-xs text-gray-300">{status.access_token_preview}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Expires</span>
+              <span className="text-xs text-gray-300">{formatExpiry(status.expires_at)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Status</span>
+              {status.expired ? (
+                <span className="text-xs font-semibold text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full">Expired</span>
+              ) : (
+                <span className="text-xs font-semibold text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">Valid</span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500">{loadingStatus ? 'Checking…' : 'Could not load token status.'}</p>
+        )}
+      </div>
+
+      {/* Seed form */}
+      <div className="bg-gray-800 rounded-xl px-4 py-4">
+        <h2 className="text-sm font-semibold text-gray-300 mb-3">Seed Fresh Tokens</h2>
+        <p className="text-xs text-gray-500 mb-4">
+          Use when the refresh token has expired. Capture fresh tokens via Proxyman from the Goodrec app and paste below.
+        </p>
+        <form onSubmit={handleSeed} className="space-y-3">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Access Token</label>
+            <textarea
+              value={accessToken}
+              onChange={(e) => setAccessToken(e.target.value)}
+              rows={3}
+              placeholder="eyJ..."
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs font-mono text-white placeholder-gray-600 focus:outline-none focus:border-green-500 resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Refresh Token</label>
+            <textarea
+              value={refreshToken}
+              onChange={(e) => setRefreshToken(e.target.value)}
+              rows={3}
+              placeholder="eyJ..."
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs font-mono text-white placeholder-gray-600 focus:outline-none focus:border-green-500 resize-none"
+            />
+          </div>
+          {seedMsg && (
+            <div className={`text-xs px-3 py-2 rounded-lg ${seedMsg.ok ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+              {seedMsg.text}
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={seeding || !accessToken.trim() || !refreshToken.trim()}
+            className="w-full py-2.5 rounded-xl bg-green-500 text-black text-sm font-semibold disabled:opacity-40 hover:bg-green-400 transition"
+          >
+            {seeding ? 'Saving…' : 'Save Tokens'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function Admin() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [users, setUsers] = useState<AdminUser[]>([])
   const [games, setGames] = useState<Game[]>([])
-  const [tab, setTab] = useState<'users' | 'games'>('users')
+  const [tab, setTab] = useState<'users' | 'games' | 'tokens'>('users')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -317,10 +456,22 @@ export default function Admin() {
           >
             Games
           </button>
+          <button
+            onClick={() => setTab('tokens')}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition ${
+              tab === 'tokens'
+                ? 'bg-green-500 text-black'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Tokens
+          </button>
         </div>
 
         {/* Tab Content */}
-        {loading ? (
+        {tab === 'tokens' ? (
+          <TokensTab />
+        ) : loading ? (
           <div className="text-center text-gray-500 py-12">
             <div className="text-sm">Loading...</div>
           </div>

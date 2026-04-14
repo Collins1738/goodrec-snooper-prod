@@ -1,14 +1,42 @@
 # TODO: restrict to admin user (phone: +15713989671)
 
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
 from app.db.database import get_db
 from app.db.models import User, UserPreference, UserNotifiedEvent
-from app.services.goodrec import fetch_unhosted_events
+from app.services.goodrec import fetch_unhosted_events, _save_tokens, _load_tokens
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+class TokenSeedRequest(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+@router.post("/tokens/seed")
+async def seed_tokens(body: TokenSeedRequest):
+    """Manually seed fresh Goodrec tokens into the DB (use when refresh token has expired)."""
+    await _save_tokens(body.access_token, body.refresh_token)
+    return {"ok": True, "message": "Tokens saved to DB."}
+
+
+@router.get("/tokens/status")
+async def token_status():
+    """Check which tokens are currently active in the DB."""
+    access_token, _ = await _load_tokens()
+    # Decode expiry without exposing the raw token
+    from app.services.goodrec import _jwt_expiry_epoch
+    import time
+    exp = _jwt_expiry_epoch(access_token)
+    return {
+        "access_token_preview": access_token[:20] + "...",
+        "expires_at": exp,
+        "expired": exp is not None and exp <= int(time.time()),
+    }
 
 
 @router.get("/users")
