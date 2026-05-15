@@ -28,9 +28,12 @@ async def poll_and_notify():
         print(f"[poller] Done. Checked {len(unhosted_events)} unhosted events, notified {total_notified}.")
 
     except Exception as e:
-        print(f"[poller] Error: {e}")
+        import traceback
+        error_detail = f"{type(e).__name__}: {e}" if str(e) else repr(e)
+        tb = traceback.format_exc()
+        print(f"[poller] Error: {error_detail}\n{tb}")
         from app.services.slack import notify_poller_error
-        notify_poller_error(str(e))
+        notify_poller_error(f"{error_detail}\n```{tb[-1000:]}```")
 
 
 async def _notify_users_for_event(db, event: dict) -> int:
