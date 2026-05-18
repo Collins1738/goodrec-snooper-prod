@@ -33,6 +33,11 @@ class Settings(BaseSettings):
 
     SLACK_WEBHOOK_URL: str = ""  # Optional — used for staging notifications
 
+    # Google Calendar — for Collins's hosted-game auto-calendar feature
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REFRESH_TOKEN: str = ""
+
     class Config:
         env_file = ".env"
 

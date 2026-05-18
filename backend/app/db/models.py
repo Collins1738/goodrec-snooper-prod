@@ -48,3 +48,14 @@ class UserNotifiedEvent(Base):
     notified_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("NOW()"))
 
     user: Mapped["User"] = relationship("User", back_populates="notified_events")
+
+
+class CollinsHostedEvent(Base):
+    """Tracks Goodrec events hosted by Collins that have been added to his calendar."""
+    __tablename__ = "collins_hosted_events"
+
+    event_id: Mapped[str] = mapped_column(String, primary_key=True)
+    calendar_event_id: Mapped[str] = mapped_column(String, nullable=False)
+    venue_name: Mapped[str] = mapped_column(String, nullable=False)
+    start_time: Mapped[str] = mapped_column(String, nullable=False)
+    calendared_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("NOW()"))

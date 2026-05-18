@@ -258,6 +258,63 @@ async def fetch_unhosted_events(days: int = 7, max_pages: int = 50) -> list[dict
 
     return unhosted
 
+COLLINS_HOST_NAME = "Collins Chikeluba"
+
+
+async def fetch_my_hosted_events(days: int = 7, max_pages: int = 50) -> list[dict]:
+    """
+    Fetch events hosted by Collins across all tracked venues, covering `days` distinct dates.
+    Returns a list of dicts: { event_id, venue_key, venue_name, date, start_time, deeplink }
+    """
+    access_token, refresh_token = await _load_tokens()
+
+    if _token_is_expiring_soon(access_token):
+        try:
+            access_token, refresh_token = await _refresh_tokens(access_token, refresh_token)
+            await _save_tokens(access_token, refresh_token)
+        except Exception as e:
+            from app.services.slack import notify_auth_failure
+            notify_auth_failure(str(e))
+            raise
+
+    title_to_key = {info["title"]: key for key, info in VENUES.items()}
+
+    seen_dates: list[str] = []
+    all_rows: list[dict] = []
+
+    async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+        for page in range(1, max_pages + 1):
+            rows = await _fetch_events_page(client, access_token, page)
+
+            for row in rows:
+                date = row.get("date")
+                if date and date not in seen_dates:
+                    seen_dates.append(date)
+
+            all_rows.extend(rows)
+
+            if len(seen_dates) >= days:
+                break
+
+    my_events: list[dict] = []
+    for row in all_rows:
+        if row.get("hostName") != COLLINS_HOST_NAME:
+            continue
+        venue_key = title_to_key.get(row.get("title", ""))
+        if not venue_key:
+            continue
+        my_events.append({
+            "event_id": row["id"],
+            "venue_key": venue_key,
+            "venue_name": VENUES[venue_key]["name"],
+            "date": row.get("date", ""),
+            "start_time": row.get("startTime", ""),
+            "deeplink": row.get("deeplink", f"https://goodrec.com/games/{row['id']}"),
+        })
+
+    return my_events
+
+
 # ── Core fetch ────────────────────────────────────────────────────────────────
 
 async def _fetch_events_page(client: httpx.AsyncClient, access_token: str, page: int) -> list[dict]:
