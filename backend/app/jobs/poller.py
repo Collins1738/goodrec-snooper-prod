@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.core.config import settings
 from app.db.database import AsyncSessionLocal
 from app.db.models import User, UserPreference, UserNotifiedEvent, CollinsHostedEvent
-from app.services.goodrec import fetch_unhosted_events, fetch_my_hosted_events
+from app.services.goodrec import fetch_all_events, fetch_unhosted_events, fetch_my_hosted_events
 from app.services.twilio import send_sms
 from app.services import slack, calendar
 
@@ -15,7 +15,38 @@ from app.services import slack, calendar
 async def poll_and_notify():
     print("[poller] Running poll...")
     try:
-        unhosted_events = await fetch_unhosted_events()
+        # Single fetch — both unhosted alerts and calendar sync share the same data
+        all_events = await fetch_all_events()
+
+        from app.services.goodrec import COLLINS_HOST_NAME, VENUES
+        title_to_key = {info["title"]: key for key, info in VENUES.items()}
+
+        unhosted_events = [
+            {
+                "event_id": r["id"],
+                "venue_key": title_to_key[r["title"]],
+                "venue_name": VENUES[title_to_key[r["title"]]]["name"],
+                "date": r.get("date", ""),
+                "start_time": r.get("startTime", ""),
+                "deeplink": r.get("deeplink", f"https://goodrec.com/games/{r['id']}"),
+            }
+            for r in all_events
+            if r.get("hostName") is None and title_to_key.get(r.get("title", ""))
+        ]
+
+        my_hosted_events = [
+            {
+                "event_id": r["id"],
+                "venue_key": title_to_key[r["title"]],
+                "venue_name": VENUES[title_to_key[r["title"]]]["name"],
+                "date": r.get("date", ""),
+                "start_time": r.get("startTime", ""),
+                "deeplink": r.get("deeplink", f"https://goodrec.com/games/{r['id']}"),
+            }
+            for r in all_events
+            if r.get("hostName") == COLLINS_HOST_NAME and title_to_key.get(r.get("title", ""))
+        ]
+
         if not unhosted_events:
             print("[poller] No unhosted events found.")
         else:
@@ -26,7 +57,7 @@ async def poll_and_notify():
                     total_notified += count
             print(f"[poller] Checked {len(unhosted_events)} unhosted events, notified {total_notified}.")
 
-        await _calendar_sync_hosted_events()
+        await _calendar_sync_hosted_events(my_hosted_events)
 
     except Exception as e:
         import traceback
@@ -37,10 +68,9 @@ async def poll_and_notify():
         notify_poller_error(f"{error_detail}\n```{tb[-1000:]}```")
 
 
-async def _calendar_sync_hosted_events():
-    """Check for Collins's hosted events and add any new ones to Google Calendar."""
+async def _calendar_sync_hosted_events(my_events: list[dict]):
+    """Add any new Collins-hosted events to Google Calendar."""
     try:
-        my_events = await fetch_my_hosted_events()
         if not my_events:
             print("[poller] No hosted events found for Collins.")
             return
