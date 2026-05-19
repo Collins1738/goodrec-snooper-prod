@@ -119,3 +119,12 @@ async def get_stats(db: AsyncSession = Depends(get_db)):
         "total_subscriptions": total_subscriptions,
         "total_notified_events": total_notified_events,
     }
+
+
+@router.post("/poll")
+async def trigger_poll():
+    """Manually trigger a poll cycle (for testing)."""
+    import asyncio
+    from app.jobs.poller import poll_and_notify
+    asyncio.create_task(poll_and_notify())
+    return {"status": "poll triggered"}
