@@ -42,7 +42,9 @@ async def create_event(event: dict) -> str:
     """
     access_token = await _get_access_token()
 
-    start_dt = datetime.fromisoformat(event["start_time"].replace("Z", "+00:00"))
+    import zoneinfo
+    eastern = zoneinfo.ZoneInfo("America/New_York")
+    start_dt = datetime.fromisoformat(event["start_time"].replace("Z", "+00:00")).astimezone(eastern)
     end_dt = start_dt + timedelta(minutes=EVENT_DURATION_MINUTES)
 
     body = {
