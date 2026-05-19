@@ -258,7 +258,7 @@ async def fetch_unhosted_events(days: int = 7, max_pages: int = 50) -> list[dict
 
     return unhosted
 
-COLLINS_HOST_NAME = "Collins Chikeluba"
+COLLINS_HOST_NAME = "Collins C"
 
 
 async def fetch_my_hosted_events(days: int = 7, max_pages: int = 50) -> list[dict]:
