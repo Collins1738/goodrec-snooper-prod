@@ -136,6 +136,10 @@ export default function Preferences() {
             {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save preferences'}
           </button>
 
+          <p className="text-gray-500 text-xs text-center mt-2 leading-relaxed">
+            By saving, you agree to receive SMS notifications from Sallova Snoop about your selected venues. Message frequency varies. Msg & data rates may apply. Reply STOP to unsubscribe, HELP for help.
+          </p>
+
           <button
             onClick={handleLogout}
             className="w-full mt-3 text-gray-500 hover:text-gray-300 text-sm py-2 transition"
