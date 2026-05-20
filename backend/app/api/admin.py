@@ -128,3 +128,53 @@ async def trigger_poll():
     from app.jobs.poller import poll_and_notify
     asyncio.create_task(poll_and_notify())
     return {"status": "poll triggered"}
+
+
+@router.get("/hosted-events")
+async def get_hosted_events(db: AsyncSession = Depends(get_db)):
+    """Return all tracked Collins-hosted calendar events."""
+    from app.db.models import CollinsHostedEvent
+    result = await db.execute(select(CollinsHostedEvent))
+    rows = result.scalars().all()
+    return {
+        "events": [
+            {
+                "event_id": r.event_id,
+                "calendar_event_id": r.calendar_event_id,
+                "venue_name": r.venue_name,
+                "start_time": r.start_time,
+                "calendared_at": r.calendared_at.isoformat() if r.calendared_at else None,
+            }
+            for r in rows
+        ]
+    }
+
+
+@router.delete("/hosted-events")
+async def clear_hosted_events(db: AsyncSession = Depends(get_db)):
+    """
+    Delete all tracked Collins-hosted calendar events from DB AND from Google Calendar.
+    This forces the next poll to recreate them with correct times.
+    """
+    from app.db.models import CollinsHostedEvent
+    from app.services import calendar as cal_service
+
+    result = await db.execute(select(CollinsHostedEvent))
+    rows = result.scalars().all()
+
+    deleted_cal = []
+    failed_cal = []
+    for r in rows:
+        try:
+            await cal_service.delete_event(r.calendar_event_id)
+            deleted_cal.append(r.calendar_event_id)
+        except Exception as e:
+            failed_cal.append({"id": r.calendar_event_id, "error": str(e)})
+        await db.delete(r)
+
+    await db.commit()
+    return {
+        "db_rows_deleted": len(rows),
+        "calendar_events_deleted": deleted_cal,
+        "calendar_delete_failures": failed_cal,
+    }
