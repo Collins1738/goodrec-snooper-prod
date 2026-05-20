@@ -77,3 +77,17 @@ async def create_event(event: dict) -> str:
         )
         resp.raise_for_status()
         return resp.json()["id"]
+
+
+
+async def delete_event(calendar_event_id: str) -> None:
+    """Delete a Google Calendar event by its ID."""
+    access_token = await _get_access_token()
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        resp = await client.delete(
+            f"{CALENDAR_API_BASE}/calendars/{CALENDAR_ID}/events/{calendar_event_id}",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        # 404 = already deleted, that's fine
+        if resp.status_code not in (200, 204, 404):
+            resp.raise_for_status()
