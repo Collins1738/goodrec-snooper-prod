@@ -44,7 +44,9 @@ async def create_event(event: dict) -> str:
 
     import zoneinfo
     eastern = zoneinfo.ZoneInfo("America/New_York")
-    start_dt = datetime.fromisoformat(event["start_time"].replace("Z", "+00:00")).astimezone(eastern)
+    # Goodrec timestamps have a Z suffix but are actually Eastern time (naive local).
+    # Strip the Z and attach Eastern timezone directly — do NOT convert from UTC.
+    start_dt = datetime.fromisoformat(event["start_time"].replace(".000Z", "").replace("Z", "")).replace(tzinfo=eastern)
     end_dt = start_dt + timedelta(minutes=EVENT_DURATION_MINUTES)
 
     body = {
