@@ -62,6 +62,10 @@ export default function Signup() {
           >
             {loading ? 'Sending...' : 'Get Started →'}
           </button>
+
+          <p className="text-gray-500 text-xs text-center leading-relaxed">
+            By signing up, you agree to receive SMS notifications from Sallova Snoop about your selected soccer games. Message frequency varies based on your selections. Msg &amp; data rates may apply. Reply <strong>STOP</strong> to unsubscribe, <strong>HELP</strong> for help.
+          </p>
         </form>
       </div>
     </div>
