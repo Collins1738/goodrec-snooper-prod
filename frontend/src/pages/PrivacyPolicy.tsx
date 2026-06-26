@@ -5,14 +5,14 @@ export default function PrivacyPolicy() {
         <div className="mb-8 text-center">
           <div className="text-4xl mb-3">🏟️</div>
           <h1 className="text-2xl font-bold">Privacy Policy</h1>
-          <p className="text-gray-400 mt-2 text-sm">Goodrec Snooper · Last updated: April 24, 2025</p>
+          <p className="text-gray-400 mt-2 text-sm">Sallova Snoop · Last updated: April 24, 2025</p>
         </div>
 
         <div className="space-y-6 text-gray-300 text-sm leading-relaxed">
           <section>
             <h2 className="text-white font-semibold text-base mb-2">1. What We Collect</h2>
             <p>
-              When you sign up for Goodrec Snooper, we collect your phone number. That's it. We use it
+              When you sign up for Sallova Snoop, we collect your phone number. That's it. We use it
               solely to send you SMS alerts when free host slots open up on Goodrec.
             </p>
           </section>
@@ -34,7 +34,7 @@ export default function PrivacyPolicy() {
             <h2 className="text-white font-semibold text-base mb-2">3. SMS Messaging</h2>
             <p>
               By providing your phone number and signing up, you consent to receiving automated SMS
-              messages from Goodrec Snooper. Message frequency varies based on slot availability.
+              messages from Sallova Snoop. Message frequency varies based on slot availability.
               Message and data rates may apply.
             </p>
             <p className="mt-2">
