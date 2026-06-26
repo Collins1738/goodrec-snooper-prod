@@ -33,7 +33,7 @@ export default function Signup() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <div className="text-4xl mb-3">🏟️</div>
-          <h1 className="text-2xl font-bold">Goodrec Snooper</h1>
+          <h1 className="text-2xl font-bold">Sallova Snoop</h1>
           <p className="text-gray-400 mt-2 text-sm">
             Get SMS alerts when free host slots open up.
           </p>

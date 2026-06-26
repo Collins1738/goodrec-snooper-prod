@@ -5,14 +5,14 @@ export default function TermsOfService() {
         <div className="mb-8 text-center">
           <div className="text-4xl mb-3">🏟️</div>
           <h1 className="text-2xl font-bold">Terms of Service</h1>
-          <p className="text-gray-400 mt-2 text-sm">Goodrec Snooper · Last updated: April 24, 2025</p>
+          <p className="text-gray-400 mt-2 text-sm">Sallova Snoop · Last updated: April 24, 2025</p>
         </div>
 
         <div className="space-y-6 text-gray-300 text-sm leading-relaxed">
           <section>
             <h2 className="text-white font-semibold text-base mb-2">1. About the Service</h2>
             <p>
-              Goodrec Snooper is an unofficial notification service that monitors Goodrec for available
+              Sallova Snoop is an unofficial notification service that monitors Goodrec for available
               free host slots and sends you SMS alerts. We are not affiliated with Goodrec.
             </p>
           </section>
@@ -29,7 +29,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-white font-semibold text-base mb-2">3. SMS Consent</h2>
             <p>
-              By signing up, you agree to receive recurring automated text messages from Goodrec Snooper
+              By signing up, you agree to receive recurring automated text messages from Sallova Snoop
               at the phone number you provide. Message frequency depends on slot availability. Message
               and data rates may apply.
             </p>
@@ -44,7 +44,7 @@ export default function TermsOfService() {
             <h2 className="text-white font-semibold text-base mb-2">4. No Guarantees</h2>
             <p>
               We do our best to send timely notifications, but we make no guarantees about slot
-              availability, notification delivery, or uptime. Goodrec Snooper is provided "as is"
+              availability, notification delivery, or uptime. Sallova Snoop is provided "as is"
               without warranty of any kind.
             </p>
           </section>
@@ -62,7 +62,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-white font-semibold text-base mb-2">6. Limitation of Liability</h2>
             <p>
-              To the fullest extent permitted by law, Goodrec Snooper is not liable for any indirect,
+              To the fullest extent permitted by law, Sallova Snoop is not liable for any indirect,
               incidental, or consequential damages arising from your use of the service.
             </p>
           </section>
