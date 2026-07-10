@@ -5,7 +5,7 @@ export default function TermsOfService() {
         <div className="mb-8 text-center">
           <div className="text-4xl mb-3">🏟️</div>
           <h1 className="text-2xl font-bold">Terms of Service</h1>
-          <p className="text-gray-400 mt-2 text-sm">Sallova Snoop · Last updated: April 24, 2025</p>
+          <p className="text-gray-400 mt-2 text-sm">Sallova Snoop · Last updated: July 10, 2026</p>
         </div>
 
         <div className="space-y-6 text-gray-300 text-sm leading-relaxed">
@@ -29,14 +29,20 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-white font-semibold text-base mb-2">3. SMS Consent</h2>
             <p>
-              By signing up, you agree to receive recurring automated text messages from Sallova Snoop
-              at the phone number you provide. Message frequency depends on slot availability. Message
-              and data rates may apply.
+              SMS notifications are optional. You may create an account and use Sallova Snoop without
+              consenting to receive SMS messages. If you voluntarily opt in by checking the SMS consent
+              checkbox during sign-up, you agree to receive recurring automated text messages from
+              Sallova Snoop at the phone number you provide. Message frequency depends on slot
+              availability. Message and data rates may apply.
             </p>
             <p className="mt-2">
-              To stop receiving messages, reply <span className="text-white font-medium">STOP</span> to
+              To stop receiving messages at any time, reply <span className="text-white font-medium">STOP</span> to
               any message. For help, reply <span className="text-white font-medium">HELP</span>. You may
               also update your preferences or unsubscribe from within the app.
+            </p>
+            <p className="mt-2">
+              Your mobile number and SMS consent status are never shared with third parties or affiliates
+              for marketing or promotional purposes.
             </p>
           </section>
 
