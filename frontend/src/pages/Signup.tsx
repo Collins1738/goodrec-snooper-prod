@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../lib/api'
 
 export default function Signup() {
   const [phone, setPhone] = useState('')
+  const [smsConsent, setSmsConsent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -50,7 +51,26 @@ export default function Signup() {
               required
               className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-base placeholder-gray-500 focus:outline-none focus:border-green-500 transition"
             />
+          </div>
 
+          {/* SMS Consent Checkbox — required by A2P 10DLC */}
+          <div className="flex items-start gap-3 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3">
+            <input
+              id="sms-consent"
+              type="checkbox"
+              checked={smsConsent}
+              onChange={(e) => setSmsConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-green-500 cursor-pointer"
+            />
+            <label htmlFor="sms-consent" className="text-gray-300 text-xs leading-relaxed cursor-pointer">
+              I agree to receive recurring automated SMS notifications from Sallova Snoop about available
+              soccer game host slots at the number above. Message frequency varies. Msg &amp; data rates may
+              apply. Reply <strong className="text-white">STOP</strong> to unsubscribe at any time,{' '}
+              <strong className="text-white">HELP</strong> for help. See our{' '}
+              <Link to="/privacy" className="text-green-400 hover:text-green-300 underline">Privacy Policy</Link>
+              {' '}and{' '}
+              <Link to="/terms" className="text-green-400 hover:text-green-300 underline">Terms of Service</Link>.
+            </label>
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
@@ -63,8 +83,8 @@ export default function Signup() {
             {loading ? 'Sending...' : 'Get Started →'}
           </button>
 
-          <p className="text-gray-500 text-xs text-center leading-relaxed">
-            By signing up, you agree to receive SMS notifications from Sallova Snoop about your selected soccer games. Message frequency varies based on your selections. Msg &amp; data rates may apply. Reply <strong>STOP</strong> to unsubscribe, <strong>HELP</strong> for help.
+          <p className="text-gray-600 text-xs text-center">
+            SMS consent is optional and not required to create an account.
           </p>
         </form>
       </div>

@@ -5,7 +5,7 @@ export default function PrivacyPolicy() {
         <div className="mb-8 text-center">
           <div className="text-4xl mb-3">🏟️</div>
           <h1 className="text-2xl font-bold">Privacy Policy</h1>
-          <p className="text-gray-400 mt-2 text-sm">Sallova Snoop · Last updated: April 24, 2025</p>
+          <p className="text-gray-400 mt-2 text-sm">Sallova Snoop · Last updated: July 10, 2026</p>
         </div>
 
         <div className="space-y-6 text-gray-300 text-sm leading-relaxed">
@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
             <p>Your phone number is used to:</p>
             <ul className="list-disc ml-5 mt-2 space-y-1">
               <li>Verify your identity via one-time passcode (OTP)</li>
-              <li>Send you SMS notifications about available Goodrec host slots</li>
+              <li>Send you SMS notifications about available soccer game host slots</li>
               <li>Allow you to manage your alert preferences</li>
             </ul>
             <p className="mt-2">
@@ -33,9 +33,14 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-white font-semibold text-base mb-2">3. SMS Messaging</h2>
             <p>
-              By providing your phone number and signing up, you consent to receiving automated SMS
-              messages from Sallova Snoop. Message frequency varies based on slot availability.
-              Message and data rates may apply.
+              SMS consent is optional. You may sign up and use the service without consenting to SMS
+              notifications. If you opt in to SMS, you agree to receive recurring automated text
+              messages from Sallova Snoop about available soccer game host slots. Message frequency varies
+              based on slot availability. Message and data rates may apply.
+            </p>
+            <p className="mt-2 font-medium text-white">
+              Mobile information (including your phone number and SMS messaging consent) is never
+              shared with third parties or affiliates for marketing or promotional purposes.
             </p>
             <p className="mt-2">
               To opt out at any time, reply <span className="text-white font-medium">STOP</span> to any
@@ -47,11 +52,15 @@ export default function PrivacyPolicy() {
             <h2 className="text-white font-semibold text-base mb-2">4. Third-Party Services</h2>
             <p>
               We use <a href="https://www.twilio.com" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300 underline">Twilio</a> to
-              deliver SMS messages. Your phone number is transmitted to Twilio for this purpose.
+              deliver SMS messages. Your phone number is transmitted to Twilio solely for message
+              delivery purposes. Twilio does not use your information for marketing.
               Twilio's privacy policy is available at{' '}
               <a href="https://www.twilio.com/en-us/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300 underline">
                 twilio.com/en-us/legal/privacy
               </a>.
+            </p>
+            <p className="mt-2">
+              No other third parties receive your mobile number or messaging consent data.
             </p>
           </section>
 
