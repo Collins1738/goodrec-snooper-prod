@@ -17,10 +17,6 @@ export default function Signup() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!smsConsent) {
-      setError('You must agree to receive SMS notifications to continue.')
-      return
-    }
     setError('')
     setLoading(true)
     try {
@@ -68,7 +64,7 @@ export default function Signup() {
             />
             <label htmlFor="sms-consent" className="text-gray-300 text-xs leading-relaxed cursor-pointer">
               I agree to receive recurring automated SMS notifications from Sallova Snoop about available
-              Goodrec host slots at the number above. Message frequency varies. Msg &amp; data rates may
+              soccer game host slots at the number above. Message frequency varies. Msg &amp; data rates may
               apply. Reply <strong className="text-white">STOP</strong> to unsubscribe at any time,{' '}
               <strong className="text-white">HELP</strong> for help. See our{' '}
               <Link to="/privacy" className="text-green-400 hover:text-green-300 underline">Privacy Policy</Link>
@@ -81,7 +77,7 @@ export default function Signup() {
 
           <button
             type="submit"
-            disabled={loading || !smsConsent}
+            disabled={loading}
             className="w-full bg-green-500 hover:bg-green-400 disabled:bg-green-800 disabled:cursor-not-allowed text-black font-semibold rounded-xl py-3 text-base transition"
           >
             {loading ? 'Sending...' : 'Get Started →'}

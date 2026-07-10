@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
             <p>Your phone number is used to:</p>
             <ul className="list-disc ml-5 mt-2 space-y-1">
               <li>Verify your identity via one-time passcode (OTP)</li>
-              <li>Send you SMS notifications about available Goodrec host slots</li>
+              <li>Send you SMS notifications about available soccer game host slots</li>
               <li>Allow you to manage your alert preferences</li>
             </ul>
             <p className="mt-2">
@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
             <p>
               SMS consent is optional. You may sign up and use the service without consenting to SMS
               notifications. If you opt in to SMS, you agree to receive recurring automated text
-              messages from Sallova Snoop about available Goodrec host slots. Message frequency varies
+              messages from Sallova Snoop about available soccer game host slots. Message frequency varies
               based on slot availability. Message and data rates may apply.
             </p>
             <p className="mt-2 font-medium text-white">
