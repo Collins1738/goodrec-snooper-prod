@@ -13,6 +13,10 @@ from app.services import slack, calendar
 
 
 async def poll_and_notify():
+    if settings.is_staging:
+        print("[poller] Staging environment — skipping poll to avoid token conflicts with prod.")
+        return
+
     print("[poller] Running poll...")
     try:
         # Single fetch — both unhosted alerts and calendar sync share the same data
