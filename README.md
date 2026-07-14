@@ -161,6 +161,7 @@ python3 test_sms.py
 - [ ] Add unsubscribe flow (reply STOP or settings page)
 - [ ] Tighten CORS in production
 - [ ] Deploy to DigitalOcean
+- [ ] Add DB indexes for poller query paths — see [`docs/database-indexes.md`](docs/database-indexes.md)
 
 
 
