@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     FIREBASE_API_KEY: str = ""  # Goodrec Firebase project key (pickupsoccer-6a62a) — optional until _refresh_tokens_firebase() is wired up
 
     SLACK_WEBHOOK_URL: str = ""  # Optional — used for staging notifications
+    SLACK_BOT_TOKEN: str = ""   # Dravon's Slack bot token — for inbound SMS forwarding
+    DRAVON_SLACK_CHANNEL: str = "C0AP6BHQRJL"  # #dravon-session-2 (or wherever to forward SMS)
 
     # Google Calendar — for Collins's hosted-game auto-calendar feature
     GOOGLE_CLIENT_ID: str = ""
