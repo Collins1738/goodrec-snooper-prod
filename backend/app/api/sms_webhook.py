@@ -10,6 +10,7 @@ router = APIRouter()
 
 OPENCLAW_GATEWAY_URL = "https://dravon-macbook.tail2c66c1.ts.net"
 OPENCLAW_HOOKS_TOKEN = "22249720bf94a52321bac5f96c9eca87c2cecb27c37651fd"
+COLLINS_PHONE = "+15713989671"
 
 
 @router.post("/sms-webhook")
@@ -34,14 +35,18 @@ async def sms_webhook(
 
 async def _wake_dravon(sender: str, message: str) -> None:
     """POST to OpenClaw /hooks/agent — async, fire and forget."""
+    is_collins = sender == COLLINS_PHONE
+    sender_label = "Collins (your human, boss)" if is_collins else f"an unknown sender ({sender})"
+
     payload = {
         "message": (
-            f"Inbound SMS from {sender}: {message}\n\n"
-            f"Reply to this SMS. Use the send_sms.js script or Twilio API directly "
+            f"Inbound SMS from {sender_label}: \"{message}\"\n\n"
+            f"Reply to this SMS using the Twilio API directly "
             f"(account SID: {settings.TWILIO_ACCOUNT_SID}, "
             f"auth token: {settings.TWILIO_AUTH_TOKEN}, "
             f"from: {settings.TWILIO_FROM_NUMBER}) to send your reply to {sender}. "
-            f"Keep the reply concise — it's going via SMS."
+            f"Keep it concise — SMS. Be yourself (Dravon). "
+            f"{'Talk to Collins like you normally would — casual, direct, no need to introduce yourself.' if is_collins else 'Be helpful but brief.'}"
         ),
         "name": "SMS",
         "wakeMode": "now",
