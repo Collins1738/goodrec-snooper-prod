@@ -1,6 +1,6 @@
 """
-SMS webhook — receives inbound Twilio messages, generates a reply via Claude,
-and sends it back to the sender via Twilio SMS (TwiML response).
+SMS webhook — receives inbound Twilio messages, fires to OpenClaw gateway async,
+returns empty TwiML immediately. Dravon processes and replies via SMS independently.
 """
 import httpx
 from fastapi import APIRouter, Form, Response
@@ -8,10 +8,8 @@ from app.core.config import settings
 
 router = APIRouter()
 
-DRAVON_SYSTEM_PROMPT = """You are Dravon, a personal AI assistant for Collins. 
-You're responding to an SMS message Collins sent you. Be concise, helpful, and friendly — this is a text message so keep replies short.
-Signature phrases (use naturally): "alright boss", "yes boss", "tough times 😬", "brudda".
-Collins's full name is Collins Chikeluba. He lives in Brooklyn, NY. He's a software engineer."""
+OPENCLAW_GATEWAY_URL = "https://dravon-macbook.tail2c66c1.ts.net"
+OPENCLAW_HOOKS_TOKEN = "22249720bf94a52321bac5f96c9eca87c2cecb27c37651fd"
 
 
 @router.post("/sms-webhook")
@@ -21,46 +19,46 @@ async def sms_webhook(
     To: str = Form(None),
     MessageSid: str = Form(None),
 ):
-    """Receive inbound SMS from Collins, reply via Claude."""
+    """Receive inbound SMS, kick off Dravon async, return empty TwiML."""
     print(f"[sms-webhook] Inbound SMS from {From}: {Body}")
 
-    reply = await _generate_reply(Body)
+    # Fire and forget — don't wait for Dravon's response
+    await _wake_dravon(From, Body)
 
-    # Reply via TwiML — Twilio sends this back as an SMS automatically
-    twiml = f'<?xml version="1.0" encoding="UTF-8"?><Response><Message>{_escape_xml(reply)}</Message></Response>'
-    return Response(content=twiml, media_type="application/xml")
-
-
-async def _generate_reply(message: str) -> str:
-    """Call Anthropic API to generate a reply."""
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={
-                    "x-api-key": settings.ANTHROPIC_API_KEY,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json",
-                },
-                json={
-                    "model": "claude-haiku-4-5",
-                    "max_tokens": 300,
-                    "system": DRAVON_SYSTEM_PROMPT,
-                    "messages": [{"role": "user", "content": message}],
-                },
-            )
-            data = resp.json()
-            return data["content"][0]["text"]
-    except Exception as e:
-        print(f"[sms-webhook] Claude call failed: {e}")
-        return "hey something went wrong on my end, try again in a sec 😬"
-
-
-def _escape_xml(text: str) -> str:
-    return (
-        text.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace('"', "&quot;")
-            .replace("'", "&apos;")
+    # Empty TwiML — Twilio won't send any auto-reply, Dravon handles it
+    return Response(
+        content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+        media_type="application/xml",
     )
+
+
+async def _wake_dravon(sender: str, message: str) -> None:
+    """POST to OpenClaw /hooks/agent — async, fire and forget."""
+    payload = {
+        "message": (
+            f"Inbound SMS from {sender}: {message}\n\n"
+            f"Reply to this SMS. Use the send_sms.js script or Twilio API directly "
+            f"(account SID: {settings.TWILIO_ACCOUNT_SID}, "
+            f"auth token: {settings.TWILIO_AUTH_TOKEN}, "
+            f"from: {settings.TWILIO_FROM_NUMBER}) to send your reply to {sender}. "
+            f"Keep the reply concise — it's going via SMS."
+        ),
+        "name": "SMS",
+        "wakeMode": "now",
+        "deliver": False,
+        "sessionKey": f"hook:sms:{sender}",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(
+                f"{OPENCLAW_GATEWAY_URL}/hooks/agent",
+                headers={
+                    "Authorization": f"Bearer {OPENCLAW_HOOKS_TOKEN}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            print(f"[sms-webhook] Gateway responded {resp.status_code}: {resp.text[:200]}")
+    except Exception as e:
+        print(f"[sms-webhook] Failed to reach OpenClaw gateway: {e}")
