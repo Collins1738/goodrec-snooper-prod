@@ -46,7 +46,13 @@ async def _ask_dravon(sender: str, message: str) -> str | None:
     sender_label = "Collins (your human)" if is_collins else f"unknown sender {sender}"
 
     # Prefix the message with sender context so Dravon knows who's texting
-    prompt = f"[SMS from {sender_label}]: {message}"
+    # Remind the agent to keep replies short — SMS has a 1600 char limit and truncation is bad UX
+    prompt = (
+        f"[SMS from {sender_label}]: {message}\n\n"
+        f"(You are replying via SMS. Keep your response under 300 characters. "
+        f"Be concise — no long explanations, no lists unless essential. "
+        f"If a topic needs more detail, summarize and offer to elaborate.)"
+    )
 
     body = {
         "model": "openclaw:main",
