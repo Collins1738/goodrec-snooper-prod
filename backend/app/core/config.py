@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     SLACK_WEBHOOK_URL: str = ""  # Optional — used for staging notifications
     SLACK_BOT_TOKEN: str = ""   # Dravon's Slack bot token — for inbound SMS forwarding
     DRAVON_SLACK_CHANNEL: str = "C0AP6BHQRJL"  # #dravon-session-2 (or wherever to forward SMS)
+    ANTHROPIC_API_KEY: str = ""  # For Dravon SMS replies
 
     # Google Calendar — for Collins's hosted-game auto-calendar feature
     GOOGLE_CLIENT_ID: str = ""
