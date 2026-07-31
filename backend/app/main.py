@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from app.api import auth, venues, preferences, admin
+from app.api import auth, venues, preferences, admin, sms_webhook
 from app.core.config import settings
 from app.jobs.poller import poll_and_notify
 from app.services import slack
@@ -37,6 +37,7 @@ app.include_router(auth.router)
 app.include_router(venues.router)
 app.include_router(preferences.router)
 app.include_router(admin.router)
+app.include_router(sms_webhook.router)
 
 
 @app.get("/health")
