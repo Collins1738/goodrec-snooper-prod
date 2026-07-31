@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     SLACK_BOT_TOKEN: str = ""   # Dravon's Slack bot token — for inbound SMS forwarding
     DRAVON_SLACK_CHANNEL: str = "C0AP6BHQRJL"  # #dravon-session-2 (or wherever to forward SMS)
     ANTHROPIC_API_KEY: str = ""  # For Dravon SMS replies
+    OPENCLAW_GATEWAY_URL: str = ""   # e.g. https://dravon-macbook.tail2c66c1.ts.net
+    OPENCLAW_GATEWAY_TOKEN: str = "" # Gateway auth token
+    COLLINS_PHONE: str = ""          # Collins's phone number for SMS identity check
 
     # Google Calendar — for Collins's hosted-game auto-calendar feature
     GOOGLE_CLIENT_ID: str = ""

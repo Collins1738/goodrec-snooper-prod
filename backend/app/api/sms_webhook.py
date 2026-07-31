@@ -11,9 +11,7 @@ from app.core.config import settings
 
 router = APIRouter()
 
-OPENCLAW_GATEWAY_URL = "https://dravon-macbook.tail2c66c1.ts.net"
-OPENCLAW_GATEWAY_TOKEN = "314f31ed21b1153525da56064c762a054fd40e6d37cb3fc6"
-COLLINS_PHONE = "+15713989671"
+# All sensitive values come from env vars via settings
 
 
 @router.post("/sms-webhook")
@@ -44,7 +42,7 @@ async def _ask_dravon(sender: str, message: str) -> str | None:
     Same pattern as the Twitter DM daemon — maintains conversation history per sender.
     """
     session_key = f"sms-{sender}"
-    is_collins = sender == COLLINS_PHONE
+    is_collins = sender == settings.COLLINS_PHONE
     sender_label = "Collins (your human)" if is_collins else f"unknown sender {sender}"
 
     # Prefix the message with sender context so Dravon knows who's texting
@@ -58,9 +56,9 @@ async def _ask_dravon(sender: str, message: str) -> str | None:
     try:
         async with httpx.AsyncClient(timeout=60) as client:
             resp = await client.post(
-                f"{OPENCLAW_GATEWAY_URL}/v1/chat/completions",
+                f"{settings.OPENCLAW_GATEWAY_URL}/v1/chat/completions",
                 headers={
-                    "Authorization": f"Bearer {OPENCLAW_GATEWAY_TOKEN}",
+                    "Authorization": f"Bearer {settings.OPENCLAW_GATEWAY_TOKEN}",
                     "Content-Type": "application/json",
                     "x-openclaw-agent-id": "main",
                     "x-openclaw-session-key": session_key,
