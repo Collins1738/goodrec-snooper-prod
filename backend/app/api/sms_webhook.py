@@ -1,6 +1,9 @@
 """
-SMS webhook — receives inbound Twilio messages, fires to OpenClaw gateway async,
-returns empty TwiML immediately. Dravon processes and replies via SMS independently.
+SMS webhook — receives inbound Twilio messages, routes to OpenClaw via
+/v1/chat/completions (synchronous, session-aware), replies via Twilio SMS.
+
+Pattern mirrors the Twitter DM daemon: stable session key per sender,
+full conversation history maintained by OpenClaw.
 """
 import httpx
 from fastapi import APIRouter, Form, Response
@@ -8,8 +11,7 @@ from app.core.config import settings
 
 router = APIRouter()
 
-OPENCLAW_GATEWAY_URL = "https://dravon-macbook.tail2c66c1.ts.net"
-OPENCLAW_HOOKS_TOKEN = "22249720bf94a52321bac5f96c9eca87c2cecb27c37651fd"
+# All sensitive values come from env vars via settings
 
 
 @router.post("/sms-webhook")
@@ -19,46 +21,86 @@ async def sms_webhook(
     To: str = Form(None),
     MessageSid: str = Form(None),
 ):
-    """Receive inbound SMS, kick off Dravon async, return empty TwiML."""
+    """Receive inbound SMS, get Dravon's reply, send it back via Twilio."""
     print(f"[sms-webhook] Inbound SMS from {From}: {Body}")
 
-    # Fire and forget — don't wait for Dravon's response
-    await _wake_dravon(From, Body)
+    reply = await _ask_dravon(From, Body)
 
-    # Empty TwiML — Twilio won't send any auto-reply, Dravon handles it
+    if reply:
+        await _send_sms(From, reply)
+
+    # Empty TwiML — we handle the reply ourselves via Twilio API
     return Response(
         content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
         media_type="application/xml",
     )
 
 
-async def _wake_dravon(sender: str, message: str) -> None:
-    """POST to OpenClaw /hooks/agent — async, fire and forget."""
-    payload = {
-        "message": (
-            f"Inbound SMS from {sender}: {message}\n\n"
-            f"Reply to this SMS. Use the send_sms.js script or Twilio API directly "
-            f"(account SID: {settings.TWILIO_ACCOUNT_SID}, "
-            f"auth token: {settings.TWILIO_AUTH_TOKEN}, "
-            f"from: {settings.TWILIO_FROM_NUMBER}) to send your reply to {sender}. "
-            f"Keep the reply concise — it's going via SMS."
-        ),
-        "name": "SMS",
-        "wakeMode": "now",
-        "deliver": False,
-        "sessionKey": f"hook:sms:{sender}",
+async def _ask_dravon(sender: str, message: str) -> str | None:
+    """
+    Call OpenClaw /v1/chat/completions synchronously with a stable session key.
+    Same pattern as the Twitter DM daemon — maintains conversation history per sender.
+    """
+    session_key = f"sms-{sender}"
+    is_collins = sender == settings.COLLINS_PHONE
+    sender_label = "Collins (your human)" if is_collins else f"unknown sender {sender}"
+
+    # Prefix the message with sender context so Dravon knows who's texting
+    # Remind the agent to keep replies short — SMS has a 1600 char limit and truncation is bad UX
+    prompt = (
+        f"[SMS from {sender_label}]: {message}\n\n"
+        f"(You are replying via SMS. Keep your response under 300 characters. "
+        f"Be concise — no long explanations, no lists unless essential. "
+        f"If a topic needs more detail, summarize and offer to elaborate.)"
+    )
+
+    body = {
+        "model": "openclaw:main",
+        "messages": [{"role": "user", "content": prompt}],
     }
+
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(
+                f"{settings.OPENCLAW_GATEWAY_URL}/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {settings.OPENCLAW_GATEWAY_TOKEN}",
+                    "Content-Type": "application/json",
+                    "x-openclaw-agent-id": "main",
+                    "x-openclaw-session-key": session_key,
+                },
+                json=body,
+            )
+            data = resp.json()
+            reply = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+            print(f"[sms-webhook] Dravon reply: {reply[:100]}")
+            return reply or None
+    except Exception as e:
+        print(f"[sms-webhook] Failed to reach OpenClaw: {e}")
+        return None
+
+
+async def _send_sms(to: str, body: str) -> None:
+    """Send SMS reply via Twilio."""
+    # SMS character limit — truncate gracefully if needed
+    if len(body) > 1600:
+        body = body[:1597] + "..."
 
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             resp = await client.post(
-                f"{OPENCLAW_GATEWAY_URL}/hooks/agent",
-                headers={
-                    "Authorization": f"Bearer {OPENCLAW_HOOKS_TOKEN}",
-                    "Content-Type": "application/json",
+                f"https://api.twilio.com/2010-04-01/Accounts/{settings.TWILIO_ACCOUNT_SID}/Messages.json",
+                auth=(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN),
+                data={
+                    "To": to,
+                    "From": settings.TWILIO_FROM_NUMBER,
+                    "Body": body,
                 },
-                json=payload,
             )
-            print(f"[sms-webhook] Gateway responded {resp.status_code}: {resp.text[:200]}")
+            result = resp.json()
+            if resp.status_code == 201:
+                print(f"[sms-webhook] Reply sent: {result.get('sid')}")
+            else:
+                print(f"[sms-webhook] SMS send failed: {result.get('message')}")
     except Exception as e:
-        print(f"[sms-webhook] Failed to reach OpenClaw gateway: {e}")
+        print(f"[sms-webhook] Failed to send SMS reply: {e}")
